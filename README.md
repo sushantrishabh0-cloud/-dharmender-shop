@@ -770,7 +770,8 @@ PRODUCTS = [
     {"id": 6, "name": "Eraser", "price": 5, "emoji": "🧼", "desc": "Clean eraser", "stock": 300},
     {"id": 7, "name": "Geometry Box", "price": 80, "emoji": "📐", "desc": "Full geometry kit", "stock": 20},
     {"id": 8, "name": "Scale", "price": 15, "emoji": "📏", "desc": "30cm scale", "stock": 100},
-]
+]    {"id": 8, "name": "Scale", "price": 15, "emoji": "📏", "desc": "30cm scale", "stock": 100},
+    {"id": 9, "name": "Condom", "price": 20, "emoji": "🛡️", "desc": "Safe condom - 1 pc", "stock": 100},
 
 HOME_HTML = """
 <h1 style="text-align:center">{{shop}}</h1>
