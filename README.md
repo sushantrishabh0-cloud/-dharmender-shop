@@ -753,4 +753,77 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=5000,
         debug=False
-    )
+    )from flask import Flask, request, render_template_string, redirect, url_for
+import json
+
+app = Flask(__name__)
+
+SHOP_NAME = "Dharmender Distributor"
+WHATSAPP_NUMBER = "916204467157"
+
+PRODUCTS = [
+    {"id": 1, "name": "Notebook", "price": 30, "emoji": "📓", "desc": "Best quality notebook for school", "stock": 100},
+    {"id": 2, "name": "Premium Notebook", "price": 40, "emoji": "📒", "desc": "Premium pages", "stock": 50},
+    {"id": 3, "name": "Sharpener", "price": 10, "emoji": "✏️", "desc": "Sharp sharpener", "stock": 200},
+    {"id": 4, "name": "Ball Pen", "price": 10, "emoji": "🖊️", "desc": "Smooth writing", "stock": 200},
+    {"id": 5, "name": "Pencil", "price": 5, "emoji": "✏️", "desc": "HB Pencil", "stock": 500},
+    {"id": 6, "name": "Eraser", "price": 5, "emoji": "🧼", "desc": "Clean eraser", "stock": 300},
+    {"id": 7, "name": "Geometry Box", "price": 80, "emoji": "📐", "desc": "Full geometry kit", "stock": 20},
+    {"id": 8, "name": "Scale", "price": 15, "emoji": "📏", "desc": "30cm scale", "stock": 100},
+]
+
+HOME_HTML = """
+<h1 style="text-align:center">{{shop}}</h1>
+<div style="display:flex; flex-wrap:wrap; gap:12px; justify-content:center; padding:10px">
+{% for p in products %}
+<a href="/product/{{p.id}}" style="border:1px solid #ddd; width:150px; padding:10px; border-radius:12px; text-decoration:none; color:black; text-align:center">
+<div style="font-size:40px">{{p.emoji}}</div>
+<h3>{{p.name}}</h3>
+<p>Rs. {{p.price}}</p>
+</a>
+{% endfor %}
+</div>
+"""
+
+DETAIL_HTML = """
+<div style="max-width:500px; margin:auto; padding:20px; font-family:sans-serif">
+<a href="/">← Back</a>
+<div style="text-align:center; font-size:80px">{{p.emoji}}</div>
+<h2>{{p.name}}</h2>
+<p>Price: <b>Rs. {{p.price}}</b></p>
+<p>Stock: {{p.stock}}</p>
+<p>{{p.desc}}</p>
+<a href="https://wa.me/{{whatsapp}}?text=Order {{p.name}} Rs.{{p.price}}" 
+style="display:block; background:green; color:white; text-align:center; padding:12px; border-radius:8px; text-decoration:none">WhatsApp pe Order Karo</a>
+<hr style="margin:20px 0">
+<h3>🔧 Yahi se Update Karo (Admin)</h3>
+<form method="POST" style="display:flex; flex-direction:column; gap:8px">
+<input name="name" value="{{p.name}}">
+<input name="price" value="{{p.price}}" type="number">
+<input name="stock" value="{{p.stock}}" type="number">
+<input name="desc" value="{{p.desc}}">
+<input name="emoji" value="{{p.emoji}}">
+<button style="background:black; color:white; padding:10px; border-radius:6px">Update Save Karo</button>
+</form>
+</div>
+"""
+
+@app.route('/')
+def home():
+    return render_template_string(HOME_HTML, products=PRODUCTS, shop=SHOP_NAME)
+
+@app.route('/product/<int:pid>', methods=['GET','POST'])
+def detail(pid):
+    p = next((x for x in PRODUCTS if x['id']==pid), None)
+    if not p: return "Not found"
+    if request.method == 'POST':
+        p['name'] = request.form['name']
+        p['price'] = int(request.form['price'])
+        p['stock'] = int(request.form['stock'])
+        p['desc'] = request.form['desc']
+        p['emoji'] = request.form['emoji']
+        return redirect(url_for('detail', pid=pid))
+    return render_template_string(DETAIL_HTML, p=p, whatsapp=WHATSAPP_NUMBER)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=10000)
